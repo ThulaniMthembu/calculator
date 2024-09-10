@@ -1,48 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculator</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div id="calculator">
-      <div id="display-container"></div>
-      <div id="button-container">
-        <p>
-          <button id="btnClear">C</button>
-          <button id="btnBrackets">()</button>
-          <button id="btnPercent">%</button>
-          <button id="btnDivide">/</button>
-        </p>
-        <p>
-          <button id="btnSeven">7</button>
-          <button id="btnEight">8</button>
-          <button id="btnNine">9</button>
-          <button id="btnTimes">*</button>
-        </p>
-        <p>
-          <button id="btnFour">4</button>
-          <button id="btnFive">5</button>
-          <button id="btnSix">6</button>
-          <button id="btnMinus">-</button>
-        </p>
-        <p>
-          <button id="btnOne">1</button>
-          <button id="btnTwo">2</button>
-          <button id="btnThree">3</button>
-          <button id="btnAdd">+</button>
-        </p>
-        <p>
-          <button id="btnNeg">+/-</button>
-          <button id="btnZero">0</button>
-          <button id="btnComma">.</button>
-          <button id="btnEqualsTo">=</button>
-        </p>
-      </div>
-    </div>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Dragon Ball Z Calculator</title>
+		<link rel="stylesheet" href="styles.css" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Kanit:wght@700&display=swap"
+			rel="stylesheet"
+		/>
+	</head>
+	<body>
+		<div class="calculator">
+			<div class="calculator-header">
+				<h1>DBZ Calculator</h1>
+			</div>
+			<input type="text" class="calculator-screen" disabled />
 
-    <script src="script.js"></script>
-  </body>
+			<div class="calculator-keys">
+				<button type="button" class="operator" value="+">+</button>
+				<button type="button" class="operator" value="-">−</button>
+				<button type="button" class="operator" value="*">×</button>
+				<button type="button" class="operator" value="/">÷</button>
+
+				<button type="button" value="7">7</button>
+				<button type="button" value="8">8</button>
+				<button type="button" value="9">9</button>
+				<button type="button" class="back">←</button>
+
+				<button type="button" value="4">4</button>
+				<button type="button" value="5">5</button>
+				<button type="button" value="6">6</button>
+				<button type="button" class="percent">%</button>
+
+				<button type="button" value="1">1</button>
+				<button type="button" value="2">2</button>
+				<button type="button" value="3">3</button>
+				<button type="button" class="negative">±</button>
+
+				<button type="button" value="0">0</button>
+				<button type="button" class="decimal" value=".">.</button>
+				<button type="button" class="clear" value="clear">C</button>
+				<button type="button" class="equal-sign" value="=">=</button>
+			</div>
+		</div>
+		<script src="script.js"></script>
+	</body>
 </html>

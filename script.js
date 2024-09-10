@@ -1,113 +1,170 @@
-const zeroBtn = document.getElementById('btnZero');
-const oneBtn = document.getElementById('btnOne');
-const twoBtn = document.getElementById('btnTwo');
-const threeBtn = document.getElementById('btnThree');
-const fourBtn = document.getElementById('btnFour');
-const fiveBtn = document.getElementById('btnFive');
-const sixBtn = document.getElementById('btnSix');
-const sevenBtn = document.getElementById('btnSeven');
-const eightBtn = document.getElementById('btnEight');
-const nineBtn = document.getElementById('btnNine');
-const addBtn = document.getElementById('btnAdd');
-const minusBtn = document.getElementById('btnMinus');
-const divideBtn = document.getElementById('btnDivide');
-const timesBtn = document.getElementById('btnTimes');
-const equalsBtn = document.getElementById('btnEqualsTo');
-const negBtn = document.getElementById('btnNeg');
-const percentBtn = document.getElementById('btnPercent');
-const clearBtn = document.getElementById('btnClear');
-const commaBtn = document.getElementById('btnComma');
+// Select elements
+const screen = document.querySelector('.calculator-screen');
+const keys = document.querySelector('.calculator-keys');
 
-let currentInput = '';
-let previousInput = '';
-let currentOperator = '';
+let firstOperand = null;
+let operator = null;
+let waitingForSecondOperand = false;
 
-const updateDisplay = (text) => {
-  document.getElementById('display-container').innerHTML = `<p>${text}</p>`;
-};
+// Update display
+function updateDisplay() {
+	screen.value = screen.value || '0';
+}
 
-const handleNumber = (num) => {
-  currentInput += num;
-  updateDisplay(currentInput);
-};
+// Handle digit input
+function inputDigit(digit) {
+	if (waitingForSecondOperand) {
+		screen.value = digit;
+		waitingForSecondOperand = false;
+	} else {
+		screen.value = screen.value === '0' ? digit : screen.value + digit;
+	}
+}
 
-const handleOperator = (operator) => {
-  if (currentInput === '') return;
-  if (previousInput !== '') {
-    calculate();
-  }
-  currentOperator = operator;
-  previousInput = currentInput;
-  currentInput = '';
-};
+// Handle decimal point
+function inputDecimal() {
+	if (waitingForSecondOperand) {
+		screen.value = '0.';
+		waitingForSecondOperand = false;
+		return;
+	}
 
-const calculate = () => {
-  let result;
-  const prev = parseFloat(previousInput);
-  const current = parseFloat(currentInput);
+	if (!screen.value.includes('.')) {
+		screen.value += '.';
+	}
+}
 
-  if (isNaN(prev) || isNaN(current)) return;
+// Handle operators
+function handleOperator(nextOperator) {
+	const inputValue = parseFloat(screen.value);
 
-  switch (currentOperator) {
-    case '+':
-      result = prev + current;
-      break;
-    case '-':
-      result = prev - current;
-      break;
-    case '*':
-      result = prev * current;
-      break;
-    case '/':
-      result = prev / current;
-      break;
-    default:
-      return;
-  }
+	if (operator && waitingForSecondOperand) {
+		operator = nextOperator;
+		screen.value = `${firstOperand} ${operator}`;
+		return;
+	}
 
-  currentInput = result.toString();
-  currentOperator = '';
-  previousInput = '';
-  updateDisplay(currentInput);
-};
+	if (firstOperand === null && !isNaN(inputValue)) {
+		firstOperand = inputValue;
+	} else if (operator) {
+		const result = calculate(firstOperand, inputValue, operator);
+		screen.value = `${parseFloat(result.toFixed(7))}`;
+		firstOperand = result;
+	}
 
-const clear = () => {
-  currentInput = '';
-  previousInput = '';
-  currentOperator = '';
-  updateDisplay('0');
-};
+	if (nextOperator === '=') {
+		operator = null;
+		waitingForSecondOperand = false;
+		firstOperand = null;
+	} else {
+		waitingForSecondOperand = true;
+		operator = nextOperator;
+		screen.value = `${firstOperand} ${operator}`;
+	}
+}
 
-[zeroBtn, oneBtn, twoBtn, threeBtn, fourBtn, fiveBtn, sixBtn, sevenBtn, eightBtn, nineBtn].forEach((btn, index) => {
-  btn.addEventListener('click', () => handleNumber(index.toString()));
+// Perform calculation
+function calculate(first, second, op) {
+	switch (op) {
+		case '+':
+			return first + second;
+		case '-':
+			return first - second;
+		case '*':
+			return first * second;
+		case '/':
+			return second !== 0 ? first / second : 'Error';
+		case '%':
+			return (first / 100) * second;
+		default:
+			return second;
+	}
+}
+
+// Clear calculator
+function resetCalculator() {
+	screen.value = '0';
+	firstOperand = null;
+	operator = null;
+	waitingForSecondOperand = false;
+}
+
+// Handle backspace
+function handleBackspace() {
+	if (waitingForSecondOperand) {
+		return;
+	}
+	screen.value = screen.value.slice(0, -1) || '0';
+}
+
+// Handle percentage
+function handlePercentage() {
+	const currentValue = parseFloat(screen.value);
+	if (!isNaN(currentValue)) {
+		screen.value = currentValue / 100;
+	}
+}
+
+// Handle negative toggle
+function handleNegative() {
+	const currentValue = parseFloat(screen.value);
+	if (!isNaN(currentValue)) {
+		screen.value = -currentValue;
+	}
+}
+
+// Event listener using event delegation
+keys.addEventListener('click', (event) => {
+	const { target } = event;
+	if (!target.matches('button')) {
+		return;
+	}
+
+	if (target.classList.contains('operator')) {
+		handleOperator(target.value);
+		updateDisplay();
+		return;
+	}
+
+	if (target.classList.contains('decimal')) {
+		inputDecimal();
+		updateDisplay();
+		return;
+	}
+
+	if (target.classList.contains('clear')) {
+		resetCalculator();
+		updateDisplay();
+		return;
+	}
+
+	if (target.classList.contains('equal-sign')) {
+		handleOperator('=');
+		updateDisplay();
+		return;
+	}
+
+	if (target.classList.contains('back')) {
+		handleBackspace();
+		updateDisplay();
+		return;
+	}
+
+	if (target.classList.contains('percent')) {
+		handlePercentage();
+		updateDisplay();
+		return;
+	}
+
+	if (target.classList.contains('negative')) {
+		handleNegative();
+		updateDisplay();
+		return;
+	}
+
+	inputDigit(target.value);
+	updateDisplay();
 });
 
-addBtn.addEventListener('click', () => handleOperator('+'));
-minusBtn.addEventListener('click', () => handleOperator('-'));
-timesBtn.addEventListener('click', () => handleOperator('*'));
-divideBtn.addEventListener('click', () => handleOperator('/'));
-
-equalsBtn.addEventListener('click', calculate);
-
-clearBtn.addEventListener('click', clear);
-
-negBtn.addEventListener('click', () => {
-  if (currentInput) {
-    currentInput = (-parseFloat(currentInput)).toString();
-    updateDisplay(currentInput);
-  }
-});
-
-percentBtn.addEventListener('click', () => {
-  if (currentInput) {
-    currentInput = (parseFloat(currentInput) / 100).toString();
-    updateDisplay(currentInput);
-  }
-});
-
-commaBtn.addEventListener('click', () => {
-  if (!currentInput.includes('.')) {
-    currentInput += '.';
-    updateDisplay(currentInput);
-  }
-});
+// Initial display update
+updateDisplay();
